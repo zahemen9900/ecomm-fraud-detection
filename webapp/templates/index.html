@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Fraud Detection Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Checkout Simulation</h1>
+
+        <!-- Product Grid -->
+        <div class="product-grid">
+            <!-- Product Card 1 -->
+            <div class="product-card" data-product-name="Awesome Gadget Pro" data-price="99.99" data-category="Electronics">
+                <img src="https://hips.hearstapps.com/hmg-prod/images/cool-tech-gifts-65fca0ca8b0b9-1-66f6c7105915a.jpg?crop=0.6666666666666666xw:1xh;center,top&resize=1200:*" alt="Product Image" class="product-image">
+                <h2>Awesome Gadget Pro</h2>
+                <p>The latest and greatest gadget you never knew you needed!</p>
+                <p><strong>Price: $99.99</strong></p>
+                <button class="purchase-btn">Simulate Transaction</button>
+            </div>
+
+            <!-- Product Card 2 -->
+            <div class="product-card" data-product-name="Stylish Smartwatch" data-price="149.50" data-category="Electronics">
+                <img src="https://cdn.mos.cms.futurecdn.net/qDiWC728ZbsZJuP34meocG.jpg" alt="Product Image" class="product-image">
+                <h2>Stylish Smartwatch</h2>
+                <p>Stay connected and track your fitness in style.</p>
+                <p><strong>Price: $149.50</strong></p>
+                <button class="purchase-btn">Simulate Transaction</button>
+            </div>
+
+            <!-- Product Card 3 -->
+            <div class="product-card" data-product-name="Cozy Winter Jacket" data-price="75.00" data-category="Clothing">
+                <img src="https://myblacktree.com/cdn/shop/files/S381e0da0bb8c47b6a778b0aa0176cc68P.webp?v=1699004094" alt="Product Image" class="product-image">
+                <h2>Cozy Winter Jacket</h2>
+                <p>Warm and comfortable for the cold season.</p>
+                <p><strong>Price: $75.00</strong></p>
+                <button class="purchase-btn">Simulate Transaction</button>
+            </div>
+        </div>
+        <!-- End Product Grid -->
+
+        <div id="checkout-form" class="hidden">
+            <h2>Enter Transaction Details for <span id="form-product-name">Product</span></h2>
+            <form id="transaction-form">
+                <!-- Add form fields corresponding to features needed by your model -->
+                <!-- Ensure 'name' attributes match keys expected by preprocess_single_transaction -->
+                <div class="form-group">
+                    <label for="transaction-amount">Transaction Amount ($):</label>
+                    <input type="number" id="transaction-amount" name="Transaction Amount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="Quantity" min="1" value="1" required>
+                </div>
+                 <div class="form-group">
+                    <label for="payment-method">Payment Method:</label>
+                    <select id="payment-method" name="Payment Method" required>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="PayPal">PayPal</option>
+                        <option value="Debit Card">Debit Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <!-- Add other methods if relevant from training data -->
+                        <option value="unknown">Unknown</option>
+                    </select>
+                </div>
+                 <div class="form-group">
+                    <label for="product-category">Product Category:</label>
+                    <select id="product-category" name="Product Category" required>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Home Goods">Home Goods</option>
+                        <option value="Books">Books</option>
+                         <!-- Add other categories if relevant from training data -->
+                        <option value="Health & Beauty">Health & Beauty</option>
+                        <option value="Toys & Games">Toys & Games</option>
+                        <option value="Home & Garden">Home & Garden</option> <!-- Added based on final features -->
+                        <option value="unknown">Unknown</option>
+                    </select>
+                </div>
+                 <div class="form-group">
+                    <label for="device-used">Device Used:</label>
+                    <select id="device-used" name="Device Used" required>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Mobile">Mobile</option>
+                        <option value="Tablet">Tablet</option>
+                        <option value="unknown">Unknown</option>
+                    </select>
+                </div>
+                <!-- Added fields based on original dataset columns needed for feature engineering -->
+                 <div class="form-group">
+                    <label for="customer-age">Customer Age:</label>
+                    <input type="number" id="customer-age" name="Customer Age" min="0" required>
+                </div>
+                 <div class="form-group">
+                    <label for="customer-location">Customer Location (e.g., Accra Central, Kumasi Adum):</label>
+                    <input type="text" id="customer-location" name="Customer Location" required placeholder="Enter Ghanaian Location">
+                </div>
+                 <div class="form-group">
+                    <label for="shipping-address">Shipping Address:</label>
+                    <input type="text" id="shipping-address" name="Shipping Address" required placeholder="Enter Full Shipping Address">
+                </div>
+                 <div class="form-group">
+                    <label for="billing-address">Billing Address:</label>
+                    <input type="text" id="billing-address" name="Billing Address" required placeholder="Enter Full Billing Address (same as shipping if applicable)">
+                </div>
+                 <div class="form-group">
+                    <label for="account-age-days">Account Age (Days):</label>
+                    <input type="number" id="account-age-days" name="Account Age Days" min="0" required>
+                </div>
+                <!-- Transaction Date can also be inferred, but adding allows simulation -->
+                <!-- Use type="datetime-local" for easier input, or keep hidden/omit -->
+                <!-- <div class="form-group">
+                    <label for="transaction-date">Transaction Date (Optional):</label>
+                    <input type="datetime-local" id="transaction-date" name="Transaction Date">
+                </div> -->
+
+
+                <button type="submit">Submit Transaction</button>
+                <!-- Add Back Button -->
+                <button type="button" id="back-to-products-btn" class="secondary-btn">Back to Products</button>
+            </form>
+        </div>
+
+        <div id="result" class="hidden">
+            <h2>Transaction Result</h2>
+            <p id="result-status"></p>
+            <p id="result-probability"></p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

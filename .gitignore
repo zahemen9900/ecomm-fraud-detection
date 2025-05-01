@@ -16,3 +16,6 @@ models/smote_random_forest.pkl
 *.json
 *.log
 *.ipynb
+*.pkl
+*.joblib
+*.h5

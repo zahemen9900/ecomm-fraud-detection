@@ -262,27 +262,55 @@ def get_feature_importance(model: Any,
     return feature_importance
 
 
+def _escape_latex(text: str) -> str:
+    """Escape characters special to LaTeX."""
+    # Order matters: escape backslash first
+    chars_to_escape = {
+        '\\': r'\\',
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\textasciicircum{}',
+    }
+    for char, escaped_char in chars_to_escape.items():
+        text = text.replace(char, escaped_char)
+    return text
+
 def plot_feature_importance(feature_importance: pd.DataFrame,
                           title: str = "Feature Importance") -> plt.Figure:
     """
-    Plot feature importance.
+    Plot feature importance, escaping LaTeX special characters in feature names.
     
     Args:
-        feature_importance: DataFrame with feature importance
-        title: Plot title
+        feature_importance: DataFrame with 'Feature' and 'Importance' columns.
+        title: Plot title.
         
     Returns:
-        Matplotlib figure object
+        Matplotlib figure object.
     """
+    # Create a copy to avoid modifying the original DataFrame
+    plot_data = feature_importance.copy()
+    
+    # Escape LaTeX special characters in the 'Feature' column for plotting
+    plot_data['Feature'] = plot_data['Feature'].apply(_escape_latex)
+    
     fig, ax = plt.subplots(figsize=(10, 8))
     
     sns.barplot(
         x='Importance',
         y='Feature',
-        data=feature_importance,
+        data=plot_data,
         ax=ax
     )
     
-    ax.set_title(title)
+    ax.set_title(_escape_latex(title)) # Also escape title just in case
+    
+    # Ensure tight layout to prevent labels from overlapping
+    plt.tight_layout() 
     
     return fig
